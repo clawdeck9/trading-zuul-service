@@ -31,7 +31,7 @@ public class CloudTradingZuulServiceApplication {
 	@LoadBalanced
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder){
 
-	    RestTemplate template = restTemplateBuilder.requestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
+	    RestTemplate template = restTemplateBuilder//.requestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
 	                                                //.interceptors(logRestRequestInterceptor) //This is your custom interceptor bean
 	                                                .messageConverters(new MappingJackson2HttpMessageConverter())
 	                                                .build();

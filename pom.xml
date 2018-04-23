@@ -36,7 +36,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-eureka</artifactId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			
+			
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -74,6 +76,13 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>
+					spring-cloud-starter-netflix-eureka
+				</artifactId>
+				<version>1.4.0.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
