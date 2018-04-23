@@ -28,7 +28,7 @@ public class GatewayRestService {
 	private static Logger log = LoggerFactory.getLogger(RestTemplate.class);
 	// resources: General helper to easily create a wrapper for a collection of entities
 	// parameterizedTypeReference: captures and passes a generic type through http+json
-	private String urlGETList = "http://trading-company-service/companies";
+	private String urlGETList = "http://trading-company-service/companies/1";
 	
 	@RequestMapping(value="/names")
 	public Collection<Company>  listCompanies(){
@@ -38,7 +38,7 @@ public class GatewayRestService {
 		
 		ResponseEntity<Resources<Company>> response = 
 				rt.exchange(urlGETList, HttpMethod.GET, null, respType);
-		System.out.println("response getBody" + response.getBody());
+		System.out.println("response getBody" + response.getBody().getContent().toString());
 		System.out.println("response getStatusCodeValue" + response.getStatusCodeValue());
 		System.out.println("response getHeaders" + response.getHeaders());
 		System.out.println("response hasBody" + response.hasBody());
@@ -71,19 +71,19 @@ public class GatewayRestService {
 	
 	// added a nested Companies class to be used by the Jackson converter
 	@RequestMapping(value="/entity")
-	public ResponseEntity<Companies>  getRespEntity(){
-		ResponseEntity<Companies> responseEntity = rt.getForEntity(urlGETList, Companies.class);
-		Companies companies = responseEntity.getBody();
+	public Company  getRespEntity(){
+		ResponseEntity<Company> responseEntity = rt.getForEntity(urlGETList, Company.class);
+		Company c = responseEntity.getBody();
 		MediaType contentType = responseEntity.getHeaders().getContentType();
 		HttpStatus statusCode = responseEntity.getStatusCode();
 		
-		System.out.println("responseEntity getBody " + responseEntity.getBody());
+		System.out.println("responseEntity getBody " + responseEntity.getBody().getCompanyName());
 		System.out.println("responseEntity getStatusCodeValue " + statusCode);
 		System.out.println("responseEntity getHeaders " + contentType);
 		
-		System.out.println("arrayList of company: " + companies.toString());
+		System.out.println("arrayList of company: " + c.toString());
 		
-		return responseEntity;
+		return c;
 	}
 	
 	@RequestMapping(value="/test")
@@ -118,6 +118,7 @@ class Companies{
 	@JsonProperty("companies")
 	private List<Company> list;
 }
+
 
 class Company  {
 	
