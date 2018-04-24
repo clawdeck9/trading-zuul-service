@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.slf4j.Logger;
@@ -28,8 +29,9 @@ public class GatewayRestService {
 	private static Logger log = LoggerFactory.getLogger(RestTemplate.class);
 	// resources: General helper to easily create a wrapper for a collection of entities
 	// parameterizedTypeReference: captures and passes a generic type through http+json
-	private String urlGETList = "http://trading-company-service/companies/1";
+	private String urlGETList = "http://trading-company-service/companylist";
 	
+	// this method calls a Spring restfull service built from the entity annotations
 	@RequestMapping(value="/names")
 	public Collection<Company>  listCompanies(){
 		ParameterizedTypeReference<Resources<Company>> respType = 
@@ -37,23 +39,16 @@ public class GatewayRestService {
 		System.out.println("typename :" + respType.getType().getTypeName()); 
 		
 		ResponseEntity<Resources<Company>> response = 
-				rt.exchange(urlGETList, HttpMethod.GET, null, respType);
+				rt.exchange("http://trading-company-service/companies", HttpMethod.GET, null, respType);
 		System.out.println("response getBody" + response.getBody().getContent().toString());
 		System.out.println("response getStatusCodeValue" + response.getStatusCodeValue());
 		System.out.println("response getHeaders" + response.getHeaders());
 		System.out.println("response hasBody" + response.hasBody());
-		
-		
-		//return response.getBody().getContent();
-		//test with a collection of company:
-		ArrayList<Company> al = new ArrayList<>();
-		al.add(new Company((long) 10, "lefort"));
-		al.add(new Company((long) 12, "lebon"));
-		System.out.println("arrayList of company: " + al.toString());
-		return al;
+		return response.getBody().getContent();
+
 	}
 	
-
+	// this method calls a Srping restfull controller built from repo  interface 
 	@RequestMapping(value="/list")
 	public Object[] listAll(){
 		ResponseEntity<Object[]> responseEntity = rt.getForEntity(urlGETList, Object[].class);
@@ -70,9 +65,9 @@ public class GatewayRestService {
 	}
 	
 	// added a nested Companies class to be used by the Jackson converter
-	@RequestMapping(value="/entity")
+	@RequestMapping(value="/company")
 	public Company  getRespEntity(){
-		ResponseEntity<Company> responseEntity = rt.getForEntity(urlGETList, Company.class);
+		ResponseEntity<Company> responseEntity = rt.getForEntity("http://trading-company-service/companies" + "/1", Company.class);
 		Company c = responseEntity.getBody();
 		MediaType contentType = responseEntity.getHeaders().getContentType();
 		HttpStatus statusCode = responseEntity.getStatusCode();
@@ -106,6 +101,7 @@ public class GatewayRestService {
 
 
 // added from StackOverflow: 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Companies{
 	public List<Company> getList() {
 		return list;
@@ -119,7 +115,7 @@ class Companies{
 	private List<Company> list;
 }
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Company  {
 	
 	public Company(Long id, String companyName) {
